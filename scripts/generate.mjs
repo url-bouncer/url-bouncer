@@ -17,6 +17,5 @@ for (const a of alphabet) {
 
 await writeFile("404.html", `<!doctype html>
 <meta charset="utf-8">
-<title></title>
 ${links}
 `);
