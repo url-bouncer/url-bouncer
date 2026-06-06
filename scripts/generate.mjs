@@ -15,7 +15,12 @@ for (const a of alphabet) {
   }
 }
 
-await writeFile("404.html", `<!doctype html>
+const html = `<!doctype html>
 <meta charset="utf-8">
 ${links}
-`);
+`;
+
+await Promise.all([
+  writeFile("c.html", html),
+  writeFile("404.html", html),
+]);
