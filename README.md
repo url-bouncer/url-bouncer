@@ -1,9 +1,22 @@
-1. base64url encode text without padding
-2. split into 2-char chunks, with final 1-char chunk if needed
-3. open /c/
-4. click chunks
-5. click DONE
+# url-bouncer
+
+Static Cloudflare Pages path-state carrier.
+
+Encode:
 
 ```sh
 node -e "console.log(Buffer.from(process.argv[1], 'utf8').toString('base64url'))" 'https://example.com/'
+```
+
+Use:
+
+1. Split the base64url string into 2-character chunks, with a final 1-character chunk if needed.
+2. Open `/c/`.
+3. Click chunks in order.
+4. Click `DONE`.
+
+Example for `https://example.com/`:
+
+```text
+aH R0 cH M6 Ly 9l eG Ft cG xl Lm Nv bS 8
 ```
