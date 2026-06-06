@@ -1,3 +1,4 @@
+/c/:x/~/ https://httpbingo.org/base64/decode/:x?content-type=text/plain 302
 /c/:x/~ https://httpbingo.org/base64/decode/:x?content-type=text/plain 302
 /c/:a/:b/:c/:d/:e/:f/:g/:h/:i/:j/:k/:l/:m/:n/:o/:p/* /c/:a:b:c:d:e:f:g:h:i:j:k:l:m:n:o:p/:splat 302
 /c/:a/:b/:c/:d/:e/:f/:g/:h/* /c/:a:b:c:d:e:f:g:h/:splat 302
