@@ -2,7 +2,7 @@ import { writeFile } from "node:fs/promises";
 
 const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
 
-let links = '<a href="/c/">RESET</a> <a href="~/">DONE</a>';
+let links = '<a href="/">RESET</a> <a href="~/">DONE</a>';
 
 for (const a of alphabet) {
   links += ` <a href="${a}/">${a}</a>`;
@@ -20,7 +20,5 @@ const html = `<!doctype html>
 ${links}
 `;
 
-await Promise.all([
-  writeFile("c.html", html),
-  writeFile("404.html", html),
-]);
+await writeFile("index.html", html);
+await writeFile("404.html", html);
