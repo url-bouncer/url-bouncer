@@ -16,7 +16,7 @@ Use:
 4. Click `DONE`.
 
 `DONE` routes to `/~/<encoded>/` through Cloudflare Redirect Rules.
-`/~/<encoded>/` returns a clickable decoded URL.
+`/~/<encoded>/` returns a direct target link and Microlink probe links.
 No external fetches are performed.
 
 Example for `https://example.com/`:
