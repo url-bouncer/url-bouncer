@@ -65,6 +65,27 @@ function materialize(state) {
 
   const encodedTarget = encodeURIComponent(target.href);
   const readerTarget = target.href.replace(/^https?:\/\//, "");
+  const scriptsFn = `({ page }) => page.evaluate(() => ({
+  href: location.href,
+  title: document.title,
+  scriptCount: document.scripts.length,
+  scripts: Array.from(document.scripts).map((s, i) => ({
+    i,
+    src: s.src,
+    type: s.type,
+    text: (s.textContent || "").slice(0, 4000)
+  }))
+}))`;
+  const textLinksFn = `({ page }) => page.evaluate(() => ({
+  href: location.href,
+  title: document.title,
+  text: (document.body?.innerText || "").slice(0, 30000),
+  links: Array.from(document.links).slice(0, 300).map((a, i) => ({
+    i,
+    text: (a.innerText || a.textContent || "").trim().slice(0, 300),
+    href: a.href
+  }))
+}))`;
   const probes = [
     ["direct", target.href],
     ["microlink metadata", `https://api.microlink.io/?url=${encodedTarget}&meta=true`],
@@ -73,7 +94,12 @@ function materialize(state) {
     ["microlink pdf", `https://api.microlink.io/?url=${encodedTarget}&pdf=true&meta=false`],
     ["jina reader", `https://r.jina.ai/http://${readerTarget}`],
     ["allorigins get", `https://api.allorigins.win/get?url=${encodedTarget}`],
-    ["allorigins raw", `https://api.allorigins.win/raw?url=${encodedTarget}`]
+    ["allorigins raw", `https://api.allorigins.win/raw?url=${encodedTarget}`],
+    ["microlink function html 0", microlinkFunction(encodedTarget, htmlChunkFn(0, 12000))],
+    ["microlink function html 1", microlinkFunction(encodedTarget, htmlChunkFn(12000, 24000))],
+    ["microlink function html 2", microlinkFunction(encodedTarget, htmlChunkFn(24000, 36000))],
+    ["microlink function scripts", microlinkFunction(encodedTarget, scriptsFn)],
+    ["microlink function text links", microlinkFunction(encodedTarget, textLinksFn)]
   ];
   const items = probes.map(([label, href]) => `<li>${link(label, href)}</li>`).join("\n");
 
@@ -81,6 +107,25 @@ function materialize(state) {
 <ul>
 ${items}
 </ul>`, 200);
+}
+
+function htmlChunkFn(start, end) {
+  return `({ page }) => page.evaluate(() => {
+    const html = document.documentElement.outerHTML;
+    return {
+      href: location.href,
+      title: document.title,
+      length: html.length,
+      start: ${start},
+      end: ${end},
+      html: html.slice(${start}, ${end})
+    };
+  })`;
+}
+
+function microlinkFunction(encodedTarget, functionSource) {
+  const encodedFunction = encodeURIComponent(functionSource);
+  return `https://api.microlink.io/?url=${encodedTarget}&function=${encodedFunction}&meta=false`;
 }
 
 function decodeTokens(state) {
