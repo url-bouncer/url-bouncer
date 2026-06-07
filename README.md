@@ -10,13 +10,13 @@ node -e "console.log(Buffer.from(process.argv[1], 'utf8').toString('base64url'))
 
 Use:
 
-1. Split the base64url string into 2-character chunks, with a final 1-character chunk if needed.
+1. Base64url-encode the target string without padding.
 2. Open `/`.
-3. Click chunks in order.
+3. Click each base64url character in order.
 4. Click `DONE`.
 
 Example for `https://example.com/`:
 
 ```text
-aH R0 cH M6 Ly 9l eG Ft cG xl Lm Nv bS 8
+a H R 0 c H M 6 L y 9 l e G F t c G x l L m N v b S 8
 ```

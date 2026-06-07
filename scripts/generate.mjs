@@ -2,23 +2,23 @@ import { writeFile } from "node:fs/promises";
 
 const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
 
-let links = '<a href="/">RESET</a> <a href="~/">DONE</a>';
+let body = `<nav>
+<a href="/">RESET</a>
+<a href="~/">DONE</a>
+</nav>
+<ul>
+`;
 
-for (const a of alphabet) {
-  links += ` <a href="${a}/">${a}</a>`;
+for (const ch of alphabet) {
+  body += `<li><a href="${ch}/">${ch}</a></li>\n`;
 }
 
-for (const a of alphabet) {
-  for (const b of alphabet) {
-    const t = a + b;
-    links += ` <a href="${t}/">${t}</a>`;
-  }
-}
+body += `</ul>
+`;
 
 const html = `<!doctype html>
 <meta charset="utf-8">
-${links}
-`;
+${body}`;
 
 await writeFile("index.html", html);
 await writeFile("404.html", html);
