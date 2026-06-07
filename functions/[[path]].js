@@ -1,21 +1,55 @@
+const macroBytes = {
+  m0: [104, 116, 116, 112, 115, 58, 47, 47],
+  m1: [104, 116, 116, 112, 58, 47, 47]
+};
+
+const tokens = ["m0", "m1"];
+
+for (let i = 0; i < 256; i++) {
+  tokens.push(i.toString(16).padStart(2, "0"));
+}
+
 export async function onRequestGet(context) {
   const url = new URL(context.request.url);
-  const parts = url.pathname
-    .split("/")
-    .filter(Boolean)
-    .slice(1);
+  const parts = url.pathname.split("/").filter(Boolean);
 
-  const encoded = parts.join("");
+  if (parts[0] === "~") {
+    return materialize(parts.slice(1));
+  }
 
-  if (!encoded) {
+  if (!parts.every(isToken)) {
+    return html("invalid token", 400);
+  }
+
+  return html(renderTokenPage(parts), 200);
+}
+
+function renderTokenPage(state) {
+  const prefix = state.length ? `/${state.join("/")}` : "";
+  const done = state.length ? `/~/${state.join("/")}/` : "/~/";
+  const links = tokens
+    .map(token => `<li><a href="${prefix}/${token}/">${escapeHtml(token)}</a></li>`)
+    .join("\n");
+
+  return `<nav>
+<a href="/">RESET</a>
+<a href="${done}">DONE</a>
+</nav>
+<ul>
+${links}
+</ul>`;
+}
+
+function materialize(state) {
+  if (!state.length) {
     return html("missing", 400);
   }
 
   let decoded;
   try {
-    decoded = decodeBase64Url(encoded);
+    decoded = decodeTokens(state);
   } catch {
-    return html("invalid base64url", 400);
+    return html("invalid token", 400);
   }
 
   let target;
@@ -49,23 +83,29 @@ ${items}
 </ul>`, 200);
 }
 
+function decodeTokens(state) {
+  const bytes = [];
+
+  for (const token of state) {
+    if (token in macroBytes) {
+      bytes.push(...macroBytes[token]);
+    } else if (/^[0-9a-f]{2}$/.test(token)) {
+      bytes.push(parseInt(token, 16));
+    } else {
+      throw new Error("invalid token");
+    }
+  }
+
+  return new TextDecoder().decode(new Uint8Array(bytes));
+}
+
+function isToken(token) {
+  return token in macroBytes || /^[0-9a-f]{2}$/.test(token);
+}
+
 function link(label, href) {
   const safeHref = escapeHtml(href);
   return `<a href="${safeHref}">${escapeHtml(label)}</a>`;
-}
-
-function decodeBase64Url(s) {
-  s = s.replace(/-/g, "+").replace(/_/g, "/");
-  while (s.length % 4) s += "=";
-
-  const bin = atob(s);
-  const bytes = new Uint8Array(bin.length);
-
-  for (let i = 0; i < bin.length; i++) {
-    bytes[i] = bin.charCodeAt(i);
-  }
-
-  return new TextDecoder().decode(bytes);
 }
 
 function html(body, status = 200) {

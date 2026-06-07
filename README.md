@@ -1,26 +1,22 @@
 # url-bouncer
 
-Static path-state carrier using Cloudflare Pages SPA fallback.
+Cloudflare Pages Function path-state carrier.
+
+Tokens:
+
+```text
+https://x.com/ = m0 78 2e 63 6f 6d 2f
+```
 
 Encode:
 
 ```sh
-node -e "console.log(Buffer.from(process.argv[1], 'utf8').toString('base64url'))" 'https://example.com/'
+node -e "const u=process.argv[1]; const out=[]; let s=u; if(s.startsWith('https://')){out.push('m0');s=s.slice(8)}else if(s.startsWith('http://')){out.push('m1');s=s.slice(7)} for(const b of Buffer.from(s,'utf8')) out.push(b.toString(16).padStart(2,'0')); console.log(out.join(' '))" 'https://x.com/'
 ```
 
 Use:
 
-1. Base64url-encode the target URL without padding.
+1. Encode the target URL into tokens.
 2. Open `/`.
-3. Click each base64url character in order.
+3. Click each token in order.
 4. Click `DONE`.
-
-`DONE` routes to `/~/<encoded>/` through Cloudflare Redirect Rules.
-`/~/<encoded>/` returns a direct target link and Microlink probe links.
-No external fetches are performed.
-
-Example for `https://example.com/`:
-
-```text
-a H R 0 c H M 6 L y 9 l e G F t c G x l L m N v b S 8
-```
