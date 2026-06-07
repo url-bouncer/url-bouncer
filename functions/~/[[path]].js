@@ -29,31 +29,22 @@ export async function onRequestGet(context) {
     return html("invalid scheme", 400);
   }
 
-  const summaryFunction = `({ page }) => page.evaluate(() => ({
-  href: location.href,
-  title: document.title,
-  text: document.body?.innerText?.slice(0, 20000) || "",
-  htmlLen: document.documentElement.outerHTML.length,
-  scriptCount: document.scripts.length,
-  scripts: Array.from(document.scripts).slice(0, 10).map(s => ({
-    src: s.src,
-    text: s.textContent.slice(0, 500)
-  })),
-  links: Array.from(document.links).slice(0, 100).map(a => ({
-    text: a.innerText.slice(0, 120),
-    href: a.href
-  }))
-}))`;
+  const encodedTarget = encodeURIComponent(target.href);
+  const readerTarget = target.href.replace(/^https?:\/\//, "");
   const probes = [
-    ["direct target", target.href],
-    ["microlink title", microlink(target, "({ page }) => page.title()")],
-    ["microlink readable text", microlink(target, "({ page }) => page.evaluate(() => document.body?.innerText?.slice(0, 20000) || \"\")")],
-    ["microlink compact DOM/script summary", microlink(target, summaryFunction)],
-    ["microlink outerHTML prefix", microlink(target, "({ page }) => page.evaluate(() => document.documentElement.outerHTML.slice(0, 20000))")]
+    ["direct", target.href],
+    ["microlink metadata", `https://api.microlink.io/?url=${encodedTarget}&meta=true`],
+    ["microlink markdown", `https://api.microlink.io/?url=${encodedTarget}&markdown=true&meta=false`],
+    ["microlink screenshot", `https://api.microlink.io/?url=${encodedTarget}&screenshot=true&meta=false`],
+    ["microlink pdf", `https://api.microlink.io/?url=${encodedTarget}&pdf=true&meta=false`],
+    ["jina reader", `https://r.jina.ai/http://${readerTarget}`],
+    ["allorigins get", `https://api.allorigins.win/get?url=${encodedTarget}`],
+    ["allorigins raw", `https://api.allorigins.win/raw?url=${encodedTarget}`]
   ];
   const items = probes.map(([label, href]) => `<li>${link(label, href)}</li>`).join("\n");
 
-  return html(`<ul>
+  return html(`<p>${escapeHtml(target.href)}</p>
+<ul>
 ${items}
 </ul>`, 200);
 }
@@ -61,14 +52,6 @@ ${items}
 function link(label, href) {
   const safeHref = escapeHtml(href);
   return `<a href="${safeHref}">${escapeHtml(label)}</a>`;
-}
-
-function microlink(target, fn) {
-  const url = new URL("https://api.microlink.io/");
-  url.searchParams.set("url", target.href);
-  url.searchParams.set("function", fn);
-  url.searchParams.set("meta", "false");
-  return url.href;
 }
 
 function decodeBase64Url(s) {
