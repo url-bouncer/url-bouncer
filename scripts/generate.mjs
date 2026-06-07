@@ -22,4 +22,3 @@ ${body}`;
 
 await writeFile("index.html", html);
 await writeFile("404.html", html);
-await writeFile("carrier.html", html);
