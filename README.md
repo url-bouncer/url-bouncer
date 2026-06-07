@@ -1,6 +1,6 @@
 # url-bouncer
 
-Static path-state carrier.
+Static path-state carrier using Cloudflare Pages SPA fallback.
 
 Encode:
 
@@ -10,7 +10,7 @@ node -e "console.log(Buffer.from(process.argv[1], 'utf8').toString('base64url'))
 
 Use:
 
-1. Base64url-encode the target string without padding.
+1. Base64url-encode the target URL without padding.
 2. Open `/`.
 3. Click each base64url character in order.
 4. Click `DONE`.
