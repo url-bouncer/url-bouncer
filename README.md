@@ -15,8 +15,8 @@ Use:
 3. Click each base64url character in order.
 4. Click `DONE`.
 
-`DONE` routes to `/out/<encoded>/` through Cloudflare Redirect Rules.
-`/out/<encoded>/` returns a clickable decoded URL.
+`DONE` routes to `/~/<encoded>/` through Cloudflare Redirect Rules.
+`/~/<encoded>/` returns a clickable decoded URL.
 No external fetches are performed.
 
 Example for `https://example.com/`:
