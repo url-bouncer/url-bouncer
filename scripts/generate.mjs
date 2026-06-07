@@ -4,13 +4,13 @@ const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789
 
 let body = `<nav>
 <a href="/">RESET</a>
-<a href="~/">DONE</a>
+<a href="./~/">DONE</a>
 </nav>
 <ul>
 `;
 
 for (const ch of alphabet) {
-  body += `<li><a href="${ch}/">${ch}</a></li>\n`;
+  body += `<li><a href="./${ch}/">${ch}</a></li>\n`;
 }
 
 body += `</ul>
@@ -22,3 +22,4 @@ ${body}`;
 
 await writeFile("index.html", html);
 await writeFile("404.html", html);
+await writeFile("carrier.html", html);
